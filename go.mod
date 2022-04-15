@@ -1,4 +1,4 @@
-module docker-entrypoint
+module gitlab.hho-inc.com/devops/docker-entrypoint
 
 go 1.17
 

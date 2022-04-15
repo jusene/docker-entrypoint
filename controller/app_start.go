@@ -2,28 +2,29 @@ package controller
 
 import (
 	"bytes"
-	"docker-entrypoint/conf"
-	"docker-entrypoint/utils"
 	"fmt"
 	"github.com/spf13/viper"
+	"gitlab.hho-inc.com/devops/docker-entrypoint/conf"
+	"gitlab.hho-inc.com/devops/docker-entrypoint/utils"
 	tools "gitlab.hho-inc.com/devops/flowctl-go/utils"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 type AppStart struct {
-   yaml *viper.Viper
+	yaml *viper.Viper
 }
 
 func NewAppStart() *AppStart {
-	 yaml := tools.LoadYaml()
-	 return  &AppStart{
-		 yaml: yaml,
-	 }
+	yaml := tools.LoadYaml()
+	return &AppStart{
+		yaml: yaml,
+	}
 }
 
 func (a *AppStart) Start() {
-	switch  a.yaml.GetString("runningtime") {
+	switch a.yaml.GetString("runningtime") {
 	case "java8", "java11":
 		a.startJava()
 	case "node":
@@ -39,20 +40,23 @@ func (a *AppStart) startJava() {
 	c := utils.NewConsul()
 	k, _ := c.GetKV(app)
 	if len(string(k)) == 0 {
-		cmd := exec.Command("java", conf.JAVA_OPTS, app+".jar")
+		args := strings.Split(conf.JAVA_OPTS, " ")
+		args = append(args, app+".jar")
+		cmd := exec.Command("java", args...)
 		tools.CmdStreamOut(cmd)
 	} else {
 		v := viper.New()
 		v.SetConfigType("yaml")
 		v.ReadConfig(bytes.NewReader(k))
-		cmd := exec.Command("java", v.GetString("java_opts"), " -jar", app+".jar")
+		args := strings.Split(v.GetString("java_opts"), " ")
+		args = append(args,  app+".jar")
+		cmd := exec.Command("java", args...)
 		tools.CmdStreamOut(cmd)
 	}
 }
 
 func (a *AppStart) startNode() {
-	cmd := exec.Command(a.yaml.GetString("entrypoint"))
+	args := strings.Split(a.yaml.GetString("entrypoint"), " ")
+	cmd := exec.Command("exec", args...)
 	tools.CmdStreamOut(cmd)
 }
-
-

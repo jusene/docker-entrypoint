@@ -22,10 +22,8 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"docker-entrypoint/conf"
-	"docker-entrypoint/controller"
 	"github.com/spf13/cobra"
-	"os"
+	"gitlab.hho-inc.com/devops/docker-entrypoint/controller"
 )
 
 // startCmd represents the start command
@@ -34,9 +32,6 @@ var startCmd = &cobra.Command{
 	Short: "app start",
 	Long: `app start`,
 	Run: func(cmd *cobra.Command, args []string) {
-		env, err := cmd.Flags().GetString("env")
-		cobra.CheckErr(err)
-		os.Setenv("env", conf.EnvMap[env])
 		start := controller.NewAppStart()
 		start.Start()
 	},
@@ -50,7 +45,7 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	// startCmd.PersistentFlags().String("foo", "", "A help for foo")
-	startCmd.PersistentFlags().StringP("env", "e", "", "run app env")
+
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:

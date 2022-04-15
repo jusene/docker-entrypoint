@@ -21,7 +21,7 @@ THE SOFTWARE.
 */
 package main
 
-import "docker-entrypoint/cmd"
+import "gitlab.hho-inc.com/devops/docker-entrypoint/cmd"
 
 func main() {
 	cmd.Execute()
