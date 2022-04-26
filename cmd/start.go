@@ -32,7 +32,9 @@ var startCmd = &cobra.Command{
 	Short: "app start",
 	Long: `app start`,
 	Run: func(cmd *cobra.Command, args []string) {
-		start := controller.NewAppStart()
+		debug, err := cmd.Flags().GetBool("debug")
+		cobra.CheckErr(err)
+		start := controller.NewAppStart(debug)
 		start.Start()
 	},
 }
@@ -50,4 +52,5 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// startCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	startCmd.Flags().Bool("debug", false, "输出启动参数")
 }

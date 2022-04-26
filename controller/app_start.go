@@ -14,12 +14,14 @@ import (
 
 type AppStart struct {
 	yaml *viper.Viper
+	debug bool
 }
 
-func NewAppStart() *AppStart {
+func NewAppStart(debug bool) *AppStart {
 	yaml := tools.LoadYaml()
 	return &AppStart{
 		yaml: yaml,
+		debug: debug,
 	}
 }
 
@@ -40,8 +42,14 @@ func (a *AppStart) startJava() {
 	c := utils.NewConsul()
 	k, _ := c.GetKV(app)
 	if len(string(k)) == 0 {
-		args := strings.Split(conf.JAVA_OPTS, " ")
+		var args []string
+		if a.yaml.GetString("runningtime") == "java8" {
+			args = strings.Split(conf.JAVA8_OPTS, " ")
+		} else if a.yaml.GetString("runningtime") == "java11" {
+			args = strings.Split(conf.JAVA11_OPTS, " ")
+		}
 		args = append(args, app+".jar")
+		a.debugPrint(args)
 		cmd := exec.Command("java", args...)
 		tools.CmdStreamOut(cmd)
 	} else {
@@ -50,6 +58,7 @@ func (a *AppStart) startJava() {
 		v.ReadConfig(bytes.NewReader(k))
 		args := strings.Split(v.GetString("java_opts"), " ")
 		args = append(args,  app+".jar")
+		a.debugPrint(args)
 		cmd := exec.Command("java", args...)
 		tools.CmdStreamOut(cmd)
 	}
@@ -59,4 +68,11 @@ func (a *AppStart) startNode() {
 	args := strings.Split(a.yaml.GetString("entrypoint"), " ")
 	cmd := exec.Command("exec", args...)
 	tools.CmdStreamOut(cmd)
+}
+
+func (a *AppStart) debugPrint(args []string) {
+	if a.debug {
+		fmt.Println("java", strings.Join(args, " "))
+		os.Exit(1)
+	}
 }
