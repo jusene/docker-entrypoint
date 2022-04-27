@@ -11,7 +11,7 @@ type consul struct {
 	prefix string
 }
 
-func NewConsul() *consul {
+func NewConsul(prefix string) *consul {
 	address := "consul.hho-inc.com"
 	port := "80"
 	conf := api.DefaultConfig()
@@ -21,7 +21,7 @@ func NewConsul() *consul {
 	cobra.CheckErr(err)
 
 	return &consul{
-		client, "/devops/cicd/build/controller",
+		client, prefix,
 	}
 }
 

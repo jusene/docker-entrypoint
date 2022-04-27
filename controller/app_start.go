@@ -39,7 +39,7 @@ func (a *AppStart) Start() {
 
 func (a *AppStart) startJava() {
 	app := a.yaml.GetString("app")
-	c := utils.NewConsul()
+	c := utils.NewConsul("/devops/cicd/build/controller")
 	k, _ := c.GetKV(app)
 	if len(string(k)) == 0 {
 		var args []string
