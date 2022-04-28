@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"github.com/hashicorp/consul/api"
 	"github.com/spf13/cobra"
 )
@@ -28,7 +27,7 @@ func NewConsul(prefix string) *consul {
 func (c *consul) GetKV(app string) ([]byte, error) {
 	defer func() {
 		if err := recover(); err != nil {
-			fmt.Printf("未找到%s的配置，使用默认配置\n", app)
+			return
 		}
 	}()
 	KVPair, _, err := c.client.KV().Get(c.prefix+"/"+app, &api.QueryOptions{})
