@@ -68,12 +68,11 @@ func (a *AppStart) startJava() {
 
 func (a *AppStart) startNode() {
 	args := strings.Split(a.yaml.GetString("entrypoint"), " ")
-	a.debugPrint(args)
-	cmd := exec.Command("command", args...)
+	cmd := exec.Command(args[0], args[1:]...)
 	tools.CmdStreamOut(cmd)
 }
 
-func (a *AppStart) startGolang()  {
+func (a *AppStart) startGolang() {
 	cmd := exec.Command("./" + a.yaml.GetString("app"))
 	tools.CmdStreamOut(cmd)
 }
